@@ -1,0 +1,380 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Evaluation Summary Report</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.7.1/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.7.1/dist/leaflet.js"></script>
+    <script src="https://code.jquery.com/jquery-1.12.0.min.js"></script>
+    <style>
+        body {
+            padding: 0;
+            margin: 0;
+            box-sizing: border-box;
+            background: #f9f9f9;
+            font-family: "Poppins", sans-serif;
+        }
+
+        .SummaryReportBox {
+            background: #fff;
+            max-width: 600px;
+            width: 100%;
+            height: auto;
+            margin: 0 auto;
+            padding: 25px 30px;
+        }
+
+        .SummaryReportLogo a {
+            max-width: 100px;
+            height: auto;
+            display: block;
+            margin: 0 auto 25px;
+        }
+
+        .SummaryReportTitle {
+            color: #101011;
+            font-size: 20px;
+            font-weight: 700;
+            text-transform: capitalize;
+            word-wrap: break-word;
+            text-align: center;
+        }
+
+        .SummaryReportCalCard {
+            background: #eef0f8;
+            border-radius: 20px;
+            padding: 25px;
+        }
+
+        .SummaryReportMapRow {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            padding: 30px 0 60px;
+        }
+
+        .MapLeftCol {
+            flex: 1 1 auto;
+            margin-right: 20px;
+            position: relative;
+            width: 100%;
+            height: 235px;
+            border-radius: 4px;
+            overflow: hidden;
+            display: block;
+            background: #eef0f8;
+        }
+
+        .mapcanvas {
+            width: 100%;
+            height: 235px;
+        }
+
+        .MapLeftCol .PinIcon {
+            height: 14px;
+            width: 14px;
+            background: #f05542;
+            display: inline-block;
+        }
+
+        .MapRightCol {
+            background: #fff;
+            border-radius: 10px;
+            border: 0.5px solid#efefef;
+            flex: 0 0 120px;
+            margin: 5px 0 0;
+            padding: 12px 15px;
+        }
+
+        .MapPinList {
+            display: flex;
+            align-items: center;
+            padding: 4px 0;
+        }
+
+        .MapPinList .PinIcon {
+            height: 14px;
+            width: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .MapPinList .PortMfgText {
+            color: #000;
+            font-size: 12px;
+            line-height: 16px;
+            font-weight: 500;
+            text-transform: capitalize;
+            word-wrap: break-word;
+            padding-left: 4px;
+        }
+
+        .CalCardTitle {
+            color: #101011;
+            font-size: 14px;
+            font-weight: 600;
+            text-transform: capitalize;
+            word-wrap: break-word;
+        }
+
+        .ReportCalCardList {
+            border-bottom: 0.5px solid #d6d6d6;
+            padding: 15px 0;
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+        }
+
+        .ReportCalCardList:last-child {
+            border: none;
+            text-align: right;
+            padding-bottom: 0;
+        }
+
+        .ReportCalCardListLeft {
+            padding-right: 15px;
+            flex: 1 1 auto;
+        }
+
+        .ReportCalCardLabel {
+            flex: 1 1 auto;
+            padding-bottom: 5px;
+        }
+
+        .ReportCalCardLabel,
+        .ReportCalCardPrice {
+            color: #101011;
+            font-size: 14px;
+            font-weight: 400;
+            text-transform: capitalize;
+            word-wrap: break-word;
+            line-height: 18px;
+        }
+
+        .ReportCalCardDes {
+            color: #767676;
+            font-size: 12px;
+            text-transform: capitalize;
+            word-wrap: break-word;
+        }
+
+        .ReportCalCardPrice {
+            font-weight: 500;
+            text-align: right;
+        }
+
+        .ListTotal {
+            padding-right: 40px;
+        }
+
+        .ListTotal .ReportCalCardLabel {
+            font-weight: 500;
+        }
+
+        .info-content {
+            color: #999;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="SummaryReportBox">
+        <div class="SummaryReportLogo">
+            <a href="#"><img src="<%=apiUrl%>/image-nearshore/Logo.svg" alt="SummaryReportLogo" /></a>
+        </div>
+        <div class="SummaryReportTitle">Nearshoring Evaluation Summary</div>
+        <div class="SummaryReportMapRow">
+            <div class="MapLeftCol">
+                <div id="map" class="mapcanvas"></div>
+            </div>
+            <div class="MapRightCol">
+                <div class="MapPinList">
+                    <div class="PinIcon">
+                        <img src="<%=apiUrl%>/image-nearshore/pinorange.svg" cross-origin="" alt="pinorange" />
+                    </div>
+                    <span class="PortMfgText"> <%=currentManufacturing.value%>(<%=currentManufacturing.label%>) </span>
+                </div>
+                <div class="MapPinList">
+                    <div class="PinIcon">
+                        <img src="<%=apiUrl%>/image-nearshore/pinsalmon.svg" cross-origin="" alt="pinsalmon" />
+                    </div>
+                    <span class="PortMfgText"> <%=futureManufacturing.value%>(<%=futureManufacturing.label%>) </span>
+                </div>
+                <div class="MapPinList">
+                    <div class="PinIcon">
+                        <img src="<%=apiUrl%>/image-nearshore/pinyellow.svg" cross-origin="" alt="pinyellow" />
+                    </div>
+                    <span class="PortMfgText"> <%=currentPort.value%>(<%=currentPort.label%>) </span>
+                </div>
+                <div class="MapPinList">
+                    <div class="PinIcon">
+                        <img src="<%=apiUrl%>/image-nearshore/pingreen.svg" cross-origin="" alt="pingreen" />
+                    </div>
+                    <span class="PortMfgText"> <%=futurePort.value%>(<%=futurePort.label%>) </span>
+                </div>
+                <div class="MapPinList">
+                    <div class="PinIcon">
+                        <img src="<%=apiUrl%>/image-nearshore/pinblue.svg" cross-origin="" alt="pinblue" />
+                    </div>
+                    <span class="PortMfgText"> <%=distributionNode.value%>(<%=distributionNode.label%>) </span>
+                </div>
+            </div>
+        </div>
+        <div class="SummaryReportCalCard">
+            <div class="CalCardTitle">Summary Report Calculations</div>
+            <div class="ReportCalCardListBlock">
+                <div class="ReportCalCardList">
+                    <div class="ReportCalCardListLeft">
+                        <div class="ReportCalCardLabel">
+                            Impact of Manufacturing Relocation
+                        </div>
+                        <div class="ReportCalCardDes">
+                            <div class="desval">
+                                <%=LTNet.label%> + <%=ContainerSavings.label%> + <%=DSavings.label%>
+                            </div>
+                            <div class="desval">
+                                <% if(LTNet.value < 0) {%>
+                                    $(<%=LTNet.value%>)
+                                <% } else {%>
+                                    $<%=LTNet.value%>
+                                <%}%> + 
+                                <% if(ContainerSavings.value < 0) {%>
+                                    $(<%=ContainerSavings.value%>)
+                                <% } else {%>
+                                    $<%=ContainerSavings.value%>
+                                <%}%> + 
+                                <% if(DSavings.value < 0) {%>
+                                    $(<%=DSavings.value%>)
+                                <% } else {%>
+                                    $<%=DSavings.value%>
+                                <%}%>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="ReportCalCardPrice">$<%=valueOfManufacturingRelocation.value%></div>
+                </div>
+                <div class="ReportCalCardList">
+                    <div class="ReportCalCardListLeft">
+                        <div class="ReportCalCardLabel">Cost of Plant Ownership</div>
+                        <div class="ReportCalCardDes">
+                            <div class="desval">
+                                <%=SpaceCost.label%> + <%=LaborCost.label%>
+                            </div>
+                            <div class="desval">
+                                <% if(SpaceCost.value < 0) {%>
+                                    $(<%=SpaceCost.value%>)
+                                <% } else {%>
+                                    $<%=SpaceCost.value%>
+                                <%}%> + 
+                                <% if(LaborCost.value < 0) {%>
+                                    $(<%=LaborCost.value%>)
+                                <% } else {%>
+                                    $<%=LaborCost.value%>
+                                <%}%>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="ReportCalCardPrice">$<%=costOfPlantOwnership.value%></div>
+                </div>
+                <div class="ReportCalCardList">
+                    <div class="ReportCalCardListLeft">
+                        <div class="ReportCalCardLabel">
+                            Impact of Distribution Relocation
+                        </div>
+                        <div class="ReportCalCardDes">
+                            <div class="desval">
+                                <%=FMCost.label%> + <%=InTransitInv.label%>
+                            </div>
+                            <div class="desval">
+                                <% if(FMCost.value < 0) {%>
+                                    $(<%=FMCost.value%>)
+                                <% } else {%>
+                                    $<%=FMCost.value%>
+                                <%}%> + 
+                                <% if(InTransitInv.value < 0) {%>
+                                    $(<%=InTransitInv.value%>)
+                                <% } else {%>
+                                    $<%=InTransitInv.value%>
+                                <%}%>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="ReportCalCardPrice">$<%=finalDistributionRelocation.value%></div>
+                </div>
+                <div class="ReportCalCardList">
+                    <div class="ReportCalCardListLeft ListTotal">
+                        <div class="ReportCalCardLabel">Total Opportunity Value</div>
+                        <div class="ReportCalCardDes">
+                            <div class="desval">
+                                Impact of Manufacturing Relocation + Cost of Plant Ownership + Impact of Distribution Relocation
+                            </div>
+                        </div>
+                    </div>
+                    <div class="ReportCalCardPrice">$<%=totalOpportunityValue.value%></div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script type="text/javascript">
+        // let locations = `[{name:"Santos",lat:-23.95109,lon:-46.35358,pinType:"portFuture",description:"null"},{name:"Vancouver",lat:49.30355,lon:-123.0475,pinType:"portCurrent",description : "null"},{name:"San Antonio",lat:-33.5875,lon:-71.61829,pinType:"mfgFuture",description : "null"},{name:"Qingdao",lat:36.05661,lon:120.3201,pinType:"mfgCurrent",description : "null"},{name:"Shanghai",lat:31.36636,lon:121.6147,pinType:"node",description : "null"}]`;
+        let locations = <%- locations %>;
+        const map = L.map("map", {
+            maxBoundsViscosity: 1.0,
+            zoomControl: false, // Adjust this value
+        }).setView([0, 0], 2); // Set initial view
+
+        L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", {
+            attribution: "©Emate",
+        }).addTo(map);
+
+        const markers = [];
+        locations.forEach((location) => {
+            let iconUrl;
+            switch (location.pinType) {
+                case "portFuture":
+                    iconUrl = `https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-green.png`;
+                    break;
+                case "portCurrent":
+                    iconUrl = `https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-yellow.png`;
+                    break;
+                case "mfgFuture":
+                    iconUrl = `https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-red.png`
+                    break;
+                case "mfgCurrent":
+                    iconUrl = `https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-orange.png`;
+                    break;
+                case "node":
+                    iconUrl = `https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-blue.png`;
+                    break;
+                default:
+                    iconUrl = `https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-blue.png`;
+            }
+            const marker = L.marker([location.lat, location.long], {
+                icon: L.icon({
+                    iconUrl: iconUrl,
+                    iconSize: [25, 41],
+                    iconAnchor: [12, 41],
+                    popupAnchor: [1, -34],
+                }),
+            }).addTo(map);
+            //   marker.bindPopup(`<b>${location.name}</b><br>${location.description}`).openPopup();
+            markers.push(marker);
+        });
+
+        // Calculate the bounding box of all markers
+        const markerGroup = L.featureGroup(markers);
+
+        map.fitBounds(markerGroup.getBounds(), {
+            padding: [0, 0],
+            animate: true,
+            maxZoom: 10,
+            zoom: 1,
+        });
+    </script>
+</body>
+
+</html>

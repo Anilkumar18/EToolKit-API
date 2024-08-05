@@ -1,0 +1,202 @@
+<script src='https://code.highcharts.com/highcharts.js'></script>
+<script src='https://code.highcharts.com/highcharts-more.js'></script>
+<script src='https://code.highcharts.com/modules/exporting.js'></script>
+<script src='https://code.highcharts.com/modules/export-data.js'></script>
+<script src='https://code.highcharts.com/modules/accessibility.js'></script>
+<script src='https://code.highcharts.com/maps/modules/map.js'></script>
+<script src='https://code.highcharts.com/mapdata/countries/us/custom/us.all.js'></script>
+<script>
+const speedDataInfo = JSON.parse(`__Site_Service_Info__`);
+const mapInfo =  JSON.parse(`__Site_Info__`);
+</script>
+<script>
+
+  const siteNames = [];
+  const mapData = mapInfo.map((info) => {
+    siteNames.push(info.SiteName);
+    return {
+      name: info.SiteName,
+      lat: info.Latitude,
+      lon: info.Longitude,
+      marker: {
+        symbol:
+          'url(https://upload.wikimedia.org/wikipedia/commons/thumb/8/88/Map_marker.svg/1334px-Map_marker.svg.png)',
+        width: 32,
+        height: 32,
+      },
+    };
+  });
+  if (siteNames.length>1) {
+    siteNames.push("Select All");
+  }
+</script>
+<script>
+  Highcharts.chart('container', {
+    chart: {
+      type: 'gauge',
+      plotBackgroundColor: null,
+      plotBackgroundImage: null,
+      plotBorderWidth: 5,
+      plotShadow: false,
+      height: '80%',
+    },
+    navigation: {
+        buttonOptions: {
+            enabled: false
+        }
+    },
+    title: { text: '' },
+    pane: {
+      startAngle: -90,
+      endAngle: 89.9,
+      background: null,
+      center: ['50%', '75%'],
+      size: '110%',
+    },
+    yAxis: {
+      min: 0,
+      max: 100,
+      tickPixelInterval: 72,
+      tickPosition: 'inside',
+      tickColor:
+        Highcharts.defaultOptions.chart.backgroundColor || '#FFFFFF',
+      tickLength: 20,
+      tickWidth: 2,
+      minorTickInterval: null,
+      labels: { distance: 20, style: { fontSize: '14px' } },
+      lineWidth: 0,
+      plotBands: [
+        { from: 0, to: 80, color: '#DF5353', thickness: 20 },
+        { from: 80, to: 90, color: '#DDDF0D', thickness: 20 },
+        { from: 90, to: 100, color: '#55BF3B', thickness: 20 },
+      ],
+    },
+    series: [
+      {
+        name: 'Service Days',
+        data: [0],
+        tooltip: { valueSuffix: ' %' },
+        dataLabels: {
+          format: '{y} %',
+          borderWidth: 0,
+          color:
+            (Highcharts.defaultOptions.title &&
+              Highcharts.defaultOptions.title.style &&
+              Highcharts.defaultOptions.title.style.color) ||
+            '#333333',
+          style: { fontSize: '16px' },
+        },
+        dial: {
+          radius: '80%',
+          backgroundColor: 'gray',
+          baseWidth: 12,
+          baseLength: '0%',
+          rearLength: '0%',
+        },
+        pivot: { backgroundColor: 'gray', radius: 6 },
+      },
+    ],
+  });
+  const speed = document.getElementById('speedBox');
+  let selectedCity = siteNames[0];
+  function handleInputSpeed(inputSpeed) {
+    function getKeyValues(cityName) {
+      for (const cityData of speedDataInfo) {
+        if (cityName in cityData) {
+          return cityData[cityName];
+        }
+      }
+      return null;
+    }
+    const speedObj = getKeyValues(selectedCity);
+    const finalOutput = [];
+    let temp = 0;
+    for (var key in speedObj) {
+      temp += speedObj[key];
+      finalOutput.push(+temp.toFixed(2));
+    }
+    if (inputSpeed === 0) {
+      const chart = Highcharts.charts[0];
+      chart.series[0].update({ data: [0] });
+    }
+    const index = Object.keys(speedObj).indexOf(inputSpeed.toString());
+    if (index !== -1) {
+      const extractedValue = finalOutput[index];
+      const chart = Highcharts.charts[0];
+      if (chart.series && chart.series[0]) {
+        chart.series[0].update({ data: [extractedValue] });
+      }
+      
+    }
+  }
+  speed.addEventListener('input', function (event) {
+    event.preventDefault();
+    const inputValue = speed.value.trim();
+    const inputSpeed = inputValue === '' ? 0 : parseInt(inputValue);
+    handleInputSpeed(inputSpeed);
+  });
+
+  const optionsArray = siteNames;
+  const selectElement = document.createElement('select');
+  selectElement.addEventListener('change', function () {
+    const selectedOption = optionsArray[selectElement.selectedIndex];
+    selectedCity =selectedOption;
+    const chart = Highcharts.charts[0];
+    chart.series[0].update({ data: [0] });
+    document.getElementById('speedBox').value = '';
+
+  });
+  optionsArray.forEach((optionText, index) => {
+    const option = document.createElement('option');
+    option.value = index;
+    option.text = optionText;
+    selectElement.appendChild(option);
+  });
+  const siteListainer = document.getElementById('siteList');
+  siteListainer.appendChild(selectElement);
+</script>
+
+<script>
+  (async () => {
+    const topology = await fetch(
+      'https://code.highcharts.com/mapdata/countries/us/us-all.topo.json'
+    ).then((response) => response.json());
+    const chart = Highcharts.mapChart('mapContainer', {
+      chart: { map: topology },
+      navigation: {
+        buttonOptions: {
+            enabled: false
+        }
+      },
+      title: { text: '' },
+      series: [
+        {
+          type: 'map',
+          name: 'USA',
+          showInLegend: false,
+          data: [],
+          states: { hover: { color: 'lightgray' } },
+          dataLabels: { enabled: false, format: '{point.name}' },
+        },
+        {
+          type: 'mappoint',
+          name: 'Marker',
+          showInLegend: false,
+          dataLabels: {
+            align: 'left',
+            verticalAlign: 'middle',
+          },
+          tooltip: {
+            pointFormat:
+              '<b>{point.name}</b>',
+          },
+          data: mapData,
+        },
+      ],
+      mapNavigation: { enabled: true, enableButtons: false },
+    });
+  })();
+</script>
+</body>
+
+</html>

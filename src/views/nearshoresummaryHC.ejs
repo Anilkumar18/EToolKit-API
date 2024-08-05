@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Evaluation Summary Report</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <script src="https://code.highcharts.com/maps/highmaps.js"></script>
+    <script src="https://code.highcharts.com/maps/modules/exporting.js"></script>
+    <script src="https://code.highcharts.com/maps/modules/offline-exporting.js">
+    </script>
+    <script src="https://code.highcharts.com/modules/accessibility.js"></script>
+    <style>
+        body {
+            padding: 0;
+            margin: 0;
+            box-sizing: border-box;
+            background: #f9f9f9;
+            font-family: "Poppins", sans-serif;
+        }
+
+        .SummaryReportBox {
+            background: #fff;
+            max-width: 600px;
+            width: 100%;
+            height: auto;
+            margin: 0 auto;
+            padding: 25px 30px;
+        }
+
+        .SummaryReportLogo a {
+            max-width: 100px;
+            height: auto;
+            display: block;
+            margin: 0 auto 25px;
+        }
+
+        .SummaryReportTitle {
+            color: #101011;
+            font-size: 20px;
+            font-weight: 700;
+            text-transform: capitalize;
+            word-wrap: break-word;
+            text-align: center;
+        }
+
+        .SummaryReportCalCard {
+            background: #eef0f8;
+            border-radius: 20px;
+            padding: 25px;
+        }
+
+        .SummaryReportMapRow {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            padding: 0px 0 0px;
+        }
+
+        .MapLeftCol {
+            flex: 1 1 auto;
+            margin-right: 20px;
+            position: relative;
+            width: 100%;
+            height: 235px;
+            border-radius: 4px;
+            overflow: hidden;
+            display: block;
+            background: #eef0f8;
+        }
+
+        .mapcanvas {
+            width: 100%;
+            height: 235px;
+        }
+
+        .MapLeftCol .PinIcon {
+            height: 14px;
+            width: 14px;
+            background: #f05542;
+            display: inline-block;
+        }
+
+        .MapRightCol {
+            display: flex;
+            background: #fff;
+            border-radius: 10px;
+            border: 0.5px solid#efefef;
+            flex: 0 0 120px;
+            margin: 5px 0 0;
+            padding: 12px 15px;
+        }
+
+        .MapPinList {
+            display: flex;
+            align-items: center;
+            padding: 4px 0;
+        }
+
+        .MapPinList .PinIcon {
+            height: 14px;
+            width: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .MapPinList .PortMfgText {
+            color: #000;
+            font-size: 12px;
+            line-height: 16px;
+            font-weight: 500;
+            text-transform: capitalize;
+            word-wrap: break-word;
+            padding-left: 4px;
+        }
+
+        .CalCardTitle {
+            color: #101011;
+            font-size: 14px;
+            font-weight: 600;
+            text-transform: capitalize;
+            word-wrap: break-word;
+        }
+
+        .ReportCalCardList {
+            border-bottom: 0.5px solid #d6d6d6;
+            padding: 15px 0;
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+        }
+
+        .ReportCalCardList:last-child {
+            border: none;
+            text-align: right;
+            padding-bottom: 0;
+        }
+
+        .ReportCalCardListLeft {
+            padding-right: 15px;
+            flex: 1 1 auto;
+        }
+
+        .ReportCalCardLabel {
+            flex: 1 1 auto;
+            padding-bottom: 5px;
+        }
+
+        .ReportCalCardLabel,
+        .ReportCalCardPrice {
+            color: #101011;
+            font-size: 14px;
+            font-weight: 400;
+            text-transform: capitalize;
+            word-wrap: break-word;
+            line-height: 18px;
+        }
+
+        .ReportCalCardDes {
+            color: #767676;
+            font-size: 12px;
+            text-transform: capitalize;
+            word-wrap: break-word;
+        }
+
+        .ReportCalCardPrice {
+            font-weight: 500;
+            text-align: right;
+        }
+
+        .ListTotal {
+            padding-right: 40px;
+        }
+
+        .ListTotal .ReportCalCardLabel {
+            font-weight: 500;
+        }
+
+        .info-content {
+            color: #999;
+        }
+        
+        .animated-line {
+            stroke-dasharray: 8;
+            stroke-dashoffset: 10;
+            animation: dash 5s linear infinite;
+            border-top: 20px solid transparent;
+            border-bottom: 20px solid transparent;
+            border-left: 30px solid blue;
+            position: absolute;
+
+        }
+
+        .animated-line::after {
+            content: '';
+            width: 0;
+            height: 0;
+            border-top: 20px solid transparent;
+            border-bottom: 20px solid transparent;
+            border-left: 30px solid blue;
+            position: absolute;
+            right: -10px;
+            top: -15px;
+        }
+
+        @keyframes dash {
+            from {
+                stroke-dashoffset: 100;
+            }
+
+            to {
+                stroke-dashoffset: 20;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="SummaryReportBox">
+        <div class="SummaryReportLogo">
+            <a href="#"><img src="<%=apiUrl%>/image-nearshore/Logo.svg" alt="SummaryReportLogo" /></a>
+        </div>
+        <div class="SummaryReportTitle">Nearshoring Evaluation Summary</div>
+        <div class="SummaryReportMapRow">
+            <div >
+                <div id="map" class="mapcanvas"></div>
+            </div>
+        </div>
+        <div>
+            <!-- <div class="MapRightCol">
+                <div class="MapPinList">
+                    <div class="PinIcon">
+                        <img src="<%=apiUrl%>/image-nearshore/pinorange.svg" cross-origin="" alt="pinorange" />
+                    </div>
+                    <span class="PortMfgText">
+                        <%=currentManufacturing.value%>(<%=currentManufacturing.label%>)
+                    </span>
+                </div>
+                <div class="MapPinList">
+                    <div class="PinIcon">
+                        <img src="<%=apiUrl%>/image-nearshore/pinsalmon.svg" cross-origin="" alt="pinsalmon" />
+                    </div>
+                    <span class="PortMfgText">
+                        <%=futureManufacturing.value%>(<%=futureManufacturing.label%>)
+                    </span>
+                </div>
+                <div class="MapPinList">
+                    <div class="PinIcon">
+                        <img src="<%=apiUrl%>/image-nearshore/pinyellow.svg" cross-origin="" alt="pinyellow" />
+                    </div>
+                    <span class="PortMfgText">
+                        <%=currentPort.value%>(<%=currentPort.label%>)
+                    </span>
+                </div>
+                <div class="MapPinList">
+                    <div class="PinIcon">
+                        <img src="<%=apiUrl%>/image-nearshore/pingreen.svg" cross-origin="" alt="pingreen" />
+                    </div>
+                    <span class="PortMfgText">
+                        <%=futurePort.value%>(<%=futurePort.label%>)
+                    </span>
+                </div>
+                <div class="MapPinList">
+                    <div class="PinIcon">
+                        <img src="<%=apiUrl%>/image-nearshore/pinblue.svg" cross-origin="" alt="pinblue" />
+                    </div>
+                    <span class="PortMfgText">
+                        <%=distributionNode.value%>(<%=distributionNode.label%>)
+                    </span>
+                </div>
+            </div> -->
+        </div>
+        <div class="SummaryReportCalCard">
+            <div class="CalCardTitle">Summary Report Calculations</div>
+            <div class="ReportCalCardListBlock">
+                <div class="ReportCalCardList">
+                    <div class="ReportCalCardListLeft">
+                        <div class="ReportCalCardLabel">
+                            Impact of Manufacturing Relocation
+                        </div>
+                        <div class="ReportCalCardDes">
+                            <div class="desval">
+                                <%=LTNet.label%> + <%=ContainerSavings.label%> + <%=DSavings.label%>
+                            </div>
+                            <div class="desval">
+                                <% if(LTNet.value < 0) {%>
+                                    $(<%=LTNet.value%>)
+                                        <% } else {%>
+                                            $<%=LTNet.value%>
+                                                <%}%> +
+                                                    <% if(ContainerSavings.value < 0) {%>
+                                                        $(<%=ContainerSavings.value%>)
+                                                            <% } else {%>
+                                                                $<%=ContainerSavings.value%>
+                                                                    <%}%> +
+                                                                        <% if(DSavings.value < 0) {%>
+                                                                            $(<%=DSavings.value%>)
+                                                                                <% } else {%>
+                                                                                    $<%=DSavings.value%>
+                                                                                        <%}%>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="ReportCalCardPrice">$<%=valueOfManufacturingRelocation.value%>
+                    </div>
+                </div>
+                <div class="ReportCalCardList">
+                    <div class="ReportCalCardListLeft">
+                        <div class="ReportCalCardLabel">Cost of Plant Ownership</div>
+                        <div class="ReportCalCardDes">
+                            <div class="desval">
+                                <%=SpaceCost.label%> + <%=LaborCost.label%>
+                            </div>
+                            <div class="desval">
+                                <% if(SpaceCost.value < 0) {%>
+                                    $(<%=SpaceCost.value%>)
+                                        <% } else {%>
+                                            $<%=SpaceCost.value%>
+                                                <%}%> +
+                                                    <% if(LaborCost.value < 0) {%>
+                                                        $(<%=LaborCost.value%>)
+                                                            <% } else {%>
+                                                                $<%=LaborCost.value%>
+                                                                    <%}%>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="ReportCalCardPrice">$<%=costOfPlantOwnership.value%>
+                    </div>
+                </div>
+                <div class="ReportCalCardList">
+                    <div class="ReportCalCardListLeft">
+                        <div class="ReportCalCardLabel">
+                            Impact of Distribution Relocation
+                        </div>
+                        <div class="ReportCalCardDes">
+                            <div class="desval">
+                                <%=FMCost.label%> + <%=InTransitInv.label%>
+                            </div>
+                            <div class="desval">
+                                <% if(FMCost.value < 0) {%>
+                                    $(<%=FMCost.value%>)
+                                        <% } else {%>
+                                            $<%=FMCost.value%>
+                                                <%}%> +
+                                                    <% if(InTransitInv.value < 0) {%>
+                                                        $(<%=InTransitInv.value%>)
+                                                            <% } else {%>
+                                                                $<%=InTransitInv.value%>
+                                                                    <%}%>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="ReportCalCardPrice">$<%=finalDistributionRelocation.value%>
+                    </div>
+                </div>
+                <div class="ReportCalCardList">
+                    <div class="ReportCalCardListLeft ListTotal">
+                        <div class="ReportCalCardLabel">Total Opportunity Value</div>
+                        <div class="ReportCalCardDes">
+                            <div class="desval">
+                                Impact of Manufacturing Relocation + Cost of Plant Ownership + Impact of Distribution
+                                Relocation
+                            </div>
+                        </div>
+                    </div>
+                    <div class="ReportCalCardPrice">$<%=totalOpportunityValue.value%>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        // Create a data value for each feature
+
+        (async () => {
+            const topology = await fetch(
+                'https://code.highcharts.com/mapdata/custom/world-highres.topo.json'
+            ).then(response => response.json());
+            // let locations = `<%-JSON.stringify(locations)%>`
+            // locations = JSON.parse(locations)
+            let locations = <%- locations %>;
+          
+            let pinPointArray = []
+            locations.forEach((data) => {
+                pinPointArray.push(
+                    {
+                        name: data.location,
+                        geometry: {
+                            type: 'Point',
+                            coordinates: [data.long, data.lat],
+
+                        },
+                        marker: {
+                            symbol: `url(${showColour(data)})`,
+                            width: 12, // Width of the icon,
+                            height: 12,
+                        },
+                        // color: showColour(data),
+                        dataLabels: {
+                            // align: 'right',
+                            // overflow: "yes",
+                            // inside: false
+                            enabled: true,
+                            style: {
+                                fontSize: "6px",
+                            },
+                            overflow: 'none',
+                            inside: false,
+                            align: 'center',
+                            x: -5,
+                            y: 10,
+                        }
+                    })
+            })
+
+            let hcData = locations.map(loc=>{
+                if(loc.hcKey){
+                    return {
+                        'hc-key': loc.hcKey,
+                        'info': loc.location,
+                        'color': "lightgreen"
+                    }
+                }
+            })
+
+            let newMapLineNew = [...locations]
+            let mapLineArray = []
+            // if (newMapLineNew.length % 2 !== 0) {
+            //     newMapLineNew.pop();
+            // }
+            // newMapLineNew.forEach((element, index) => {
+            //     if (index % 2 === 0) {
+            //         mapLineArray.push({
+            //             geometry: {
+            //                 type: `LineString`,
+            //                 coordinates: [
+            //                     [element.long, element.lat],
+            //                     [newMapLineNew[index + 1].long, newMapLineNew[index + 1].lat]
+            //                 ]
+            //             },
+            //             className: `animated-line`,
+            //             // color: `red`
+            //             color: `rgb(${Math.floor(Math.random() * 128)},${Math.floor(Math.random() * 128)},${Math.floor(Math.random() * 128)})`
+            //         })
+            //     }
+            // });
+            // // Initialize the chart
+            const lines = [
+                { from: 0, to: 1, color: "grey",  className: "animated-line arrow" },
+                { from: 0, to: 2, color: "black", lineWidth: 2, },
+                { from: 3, to: 4, color: "red", className: "animated-line" },
+                { from: 1, to: 3, color: "red", className: "animated-line arrow" },
+                { from: 2, to: 4, color: "black", lineWidth: 2 },
+            ];
+            lines.forEach(line => {
+                const from = locations[line.from];
+                const to = locations[line.to];
+                mapLineArray.push({
+                    geometry: {
+                    type: "LineString",
+                    coordinates: [
+                        [from.long, from.lat],
+                        [to.long, to.lat]
+                    ]
+                    },
+                    className: line.className || "",
+                    color: line.color,
+                    lineWidth: line.lineWidth || 1
+                });
+            });
+
+            Highcharts.mapChart('map', {
+                chart: {
+                    map: topology
+                },
+                title: {
+                    text: null
+                },
+                legend: {
+                    enabled: false
+                },
+                mapNavigation: {
+                    enabled: true,
+                    buttonOptions: {
+                        verticalAlign: "bottom", // Align the button to the bottom
+                        align: "right", // Align the button to the right
+                    },
+                },
+                tooltip: {
+                    useHTML: true,
+                    headerFormat: '<b>{point.key}</b>:<br/>',
+                    pointFormat: '{point.info}'
+                },
+                credits: {
+                    text: 'emate',
+                },
+                exporting: {
+                    buttons: {
+                        contextButton: {
+                            enabled: false
+                        }
+                    }
+                },
+                mapView: {
+                    fitToGeometry: {
+                        type: 'MultiPoint',
+                        coordinates: [
+                            // Alaska west
+                            [-164, 54],
+                            // Greenland north
+                            [-35, 84],
+                            // New Zealand east
+                            [179, -38],
+                            // Chile south
+                            [-68, -55]
+                        ]
+                    }
+                },
+
+                series: [
+                    {
+                        data: hcData,
+                        keys: ['hc-key', 'color', 'info'],
+                        name: 'NearShore'
+                    },
+                    {
+                        type: 'mapline',
+                        data: mapLineArray,
+                        lineWidth: 2,
+                        enableMouseTracking: false
+                    },
+                    {
+                        type: 'mappoint',
+                        marker: {
+                            radius: 2
+                        },
+                        dataLabels: {
+                            format: '<b>{point.name}</b><br><span style="font-weight: normal; opacity: 0.5">{point.custom.arrival}</span>',
+                            align: 'left',
+                            verticalAlign: 'middle'
+                        },
+                        data: pinPointArray,
+                        enableMouseTracking: false
+                    }
+                ]
+            });
+            function showColour(location) {
+                switch (location.pinType) {
+                    case "portFuture":
+                        iconUrl = `https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-green.png`;
+                        break;
+                    case "portCurrent":
+                        iconUrl = `https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-yellow.png`;
+                        break;
+                    case "mfgFuture":
+                        iconUrl = `https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-red.png`
+                        break;
+                    case "mfgCurrent":
+                        iconUrl = `https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-orange.png`;
+                        break;
+                    case "node":
+                        iconUrl = `https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-blue.png`;
+                        break;
+                    default:
+                        iconUrl = `https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-blue.png`;
+                }
+                return iconUrl
+            }
+        })();
+
+    </script>
+</body>
+
+</html>

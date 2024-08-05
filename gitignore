@@ -1,0 +1,16 @@
+node_modules
+.vscode
+package-lock.json
+yarn.lock
+src/public/upload/*
+src/public/reports/*
+src/public/sampleFiles/*
+src/public/db-backup/*
+.history
+dist
+*.zip
+logs
+
+# exception to the rule
+!src/reports/.gitkeep
+

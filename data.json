@@ -1,0 +1,158 @@
+{
+    "variable" : [
+        {
+            "isActive" : true,
+            "isDeleted" : false,
+            "name" : "product",
+            "label" : "Product",
+            "type" : "System",
+            "valueType" : "Array",
+            "category" : "MultiOption",
+            "isSingle" : false
+        },
+        {
+            "isActive" : true,
+            "isDeleted" : false,
+            "name" : "state",
+            "label" : "State",
+            "type" : "System",
+            "valueType" : "Array",
+            "category" : "MultiOption",
+            "isSingle" : false
+        },
+        {
+            "isActive" : true,
+            "isDeleted" : false,
+            "name" : "serviceLevel",
+            "label" : "Desire Service Level",
+            "type" : "System",
+            "valueType" : "Array",
+            "category" : "MultiOption",
+            "isSingle" : false
+        },
+        {
+            "isActive" : true,
+            "isDeleted" : false,
+            "name" : "site",
+            "label" : "Site",
+            "type" : "System",
+            "valueType" : "Array",
+            "category" : "MultiOption",
+            "isSingle" : false
+        },
+        {
+            "isActive" : true,
+            "isDeleted" : false,
+            "name" : "nextAction",
+            "label" : "Next Required Action",
+            "type" : "System",
+            "valueType" : "",
+            "category" : ""
+        },
+        {
+            "isActive" : true,
+            "isDeleted" : false,
+            "name" : "LTLSales",
+            "label" : "Less Than Truckload Sales",
+            "type" : "System",
+            "valueType" : "Number",
+            "category" : "ManualInput"
+        },
+        {
+            "isActive" : true,
+            "isDeleted" : false,
+            "name" : "TLSales",
+            "label" : "Truckload Sales",
+            "type" : "System",
+            "valueType" : "Number",
+            "category" : "ManualInput"
+        },
+        {
+            "isActive" : true,
+            "isDeleted" : false,
+            "name" : "privateFleetSales",
+            "label" : "Private Fleet Sales",
+            "type" : "System",
+            "valueType" : "Number",
+            "category" : "ManualInput"
+        },
+        {
+            "isActive" : true,
+            "isDeleted" : false,
+            "name" : "eCommerceRevenuePercentage",
+            "label" : "Organization's Revenue Percentage From E-Commerce",
+            "type" : "Organization",
+            "valueType" : "Number"
+        },
+        {
+            "isActive" : true,
+            "isDeleted" : false,
+            "name" : "traditionalRetailRevenuePercentage",
+            "label" : "Organization's Traditional Retail Revenue Percentage",
+            "type" : "Organization",
+            "valueType" : "Number"
+        },
+        {
+            "isActive" : true,
+            "isDeleted" : false,
+            "name" : "eCommerceUnit",
+            "label" : "Organization's E-Commerce Units",
+            "type" : "Organization",
+            "valueType" : "Number"
+        },
+        {
+            "isActive" : true,
+            "isDeleted" : false,
+            "name" : "traditionalRetailUnit",
+            "label" : "Organization's Traditional Retail Units",
+            "type" : "Organization",
+            "valueType" : "Number"
+        },
+        {
+            "isActive" : true,
+            "isDeleted" : false,
+            "name" : "overAllRevenue",
+            "label" : "Organization's Overall Revenue",
+            "type" : "Organization",
+            "valueType" : "Number"
+        }
+    ],
+    "preDefineLogic" : {
+        "isDeleted" : false,
+        "isActive" : true,
+        "logic" : "networkComputation",
+        "label" :"Network Computation(New DC Evaluation)"
+    },
+    "multiselect" : [
+        {
+            "isDeleted" : false,
+            "isActive" : true,
+            "property" : "product",
+            "label" : "Products"
+        },
+        {
+            "isDeleted" : false,
+            "isActive" : true,
+            "property" : "state",
+            "label" : "States"
+        },
+        {
+            "isDeleted" : false,
+            "isActive" : true,
+            "property" : "site",
+            "label" : "Sites"
+        },
+        {
+            "isDeleted" : false,
+            "isActive" : true,
+            "property" : "serviceLevel",
+            "label" : "Desire Service Level"
+        },
+        {
+            "isDeleted" : false,
+            "isActive" : true,
+            "property" : "action",
+            "label" : "Actions"
+        }
+    ]
+}

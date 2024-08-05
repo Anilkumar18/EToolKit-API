@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Evaluation Summary Report</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet" />
+    <style>
+        body {
+            padding: 0;
+            margin: 0;
+            box-sizing: border-box;
+            background: #f9f9f9;
+            font-family: "Poppins", sans-serif;
+        }
+
+        .SummaryReportBox {
+            background: #fff;
+            max-width: 600px;
+            width: 100%;
+            height: auto;
+            margin: 0 auto;
+            padding: 25px 30px;
+        }
+
+        .SummaryReportLogo a {
+            max-width: 100px;
+            height: auto;
+            display: block;
+            margin: 0 auto 25px;
+        }
+
+        .SummaryReportTitle {
+            color: #101011;
+            font-size: 20px;
+            font-weight: 700;
+            text-transform: capitalize;
+            word-wrap: break-word;
+            text-align: center;
+        }
+
+        .SummaryReportCalCard {
+            background: #eef0f8;
+            border-radius: 20px;
+            padding: 25px;
+        }
+
+        .SummaryReportMapRow {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            padding: 30px 0 60px;
+        }
+
+        .MapLeftCol {
+            flex: 1 1 auto;
+            margin-right: 20px;
+            position: relative;
+            width: 100%;
+            height: 235px;
+            border-radius: 4px;
+            overflow: hidden;
+            display: block;
+            background: #eef0f8;
+        }
+
+        #mapcanvas {
+            width: 100%;
+            height: 100%;
+        }
+
+        .MapLeftCol .PinIcon {
+            height: 14px;
+            width: 14px;
+            background: #f05542;
+            display: inline-block;
+        }
+
+        .MapRightCol {
+            background: #fff;
+            border-radius: 10px;
+            border: 0.5px solid#efefef;
+            flex: 0 0 120px;
+            margin: 5px 0 0;
+            padding: 12px 15px;
+        }
+
+        .MapPinList {
+            display: flex;
+            align-items: center;
+            padding: 4px 0;
+        }
+
+        .MapPinList .PinIcon {
+            height: 14px;
+            width: 14px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .MapPinList .PortMfgText {
+            color: #000;
+            font-size: 12px;
+            line-height: 16px;
+            font-weight: 500;
+            text-transform: capitalize;
+            word-wrap: break-word;
+            padding-left: 4px;
+        }
+
+        .CalCardTitle {
+            color: #101011;
+            font-size: 14px;
+            font-weight: 600;
+            text-transform: capitalize;
+            word-wrap: break-word;
+        }
+
+        .ReportCalCardList {
+            border-bottom: 0.5px solid #d6d6d6;
+            padding: 15px 0;
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+        }
+
+        .ReportCalCardList:last-child {
+            border: none;
+            text-align: right;
+            padding-bottom: 0;
+        }
+
+        .ReportCalCardListLeft {
+            padding-right: 15px;
+            flex: 1 1 auto;
+        }
+
+        .ReportCalCardLabel {
+            flex: 1 1 auto;
+            padding-bottom: 5px;
+        }
+
+        .ReportCalCardLabel,
+        .ReportCalCardPrice {
+            color: #101011;
+            font-size: 14px;
+            font-weight: 400;
+            text-transform: capitalize;
+            word-wrap: break-word;
+            line-height: 18px;
+        }
+
+        .ReportCalCardDes {
+            color: #767676;
+            font-size: 12px;
+            text-transform: capitalize;
+            word-wrap: break-word;
+        }
+
+        .ReportCalCardPrice {
+            font-weight: 500;
+            text-align: right;
+        }
+
+        .ListTotal {
+            padding-right: 40px;
+        }
+
+        .ListTotal .ReportCalCardLabel {
+            font-weight: 500;
+        }
+
+        .info-content {
+            color: #999;
+        }
+    </style>
+    <script src="https://code.jquery.com/jquery-1.12.0.min.js"></script>
+    <script
+        src="https://maps.googleapis.com/maps/api/js?sensor=false"> google.maps.event.addDomListener(window, 'load', initialise);</script>
+    <script>
+        var locations1 = <%- locations %>;
+        $(document).ready(function () {
+            var mapcanvas = $("#mapcanvas");
+
+            if (mapcanvas.length) {
+                loadMap(locations1, "mapcanvas");
+            }
+        });
+        function getIcon(iconType) {
+            switch (iconType) {
+                case "portFuture":
+                    return "./images/pingreen.svg";
+                case "portCurrent":
+                    return "./images/pinyellow.svg";
+                case "mfgFuture":
+                    return "./images/pinsalmon.svg";
+                case "mfgCurrent":
+                    return "./images/pinorange.svg";
+                case "node":
+                    return "./images/pinblue.svg";
+                default:
+                    return "./images/pinblue.svg";
+            }
+        }
+        function loadMap(loc, elem) {
+            var map = new google.maps.Map(document.getElementById(elem), {
+                zoom: 1,
+                scrollwheel: false,
+                center: new google.maps.LatLng(32.811315, 13.125122),
+                mapTypeId: google.maps.MapTypeId.ROADMAP,
+                disableDefaultUI: true,
+            });
+
+            var marker, i;
+            // var infowindow = new google.maps.InfoWindow();
+            for (i = 0; i < loc.length; i++) {
+                marker = new google.maps.Marker({
+                    position: new google.maps.LatLng(loc[i].lat, loc[i].long),
+                    map: map,
+                    animation: google.maps.Animation.DROP,
+                    icon: getIcon(loc[i].pinType),
+                });
+                //click function to marker, pops up infowindow
+                // google.maps.event.addListener(
+                //   marker,
+                //   "click",
+                //   (function (marker, i) {
+                //     return function () {
+                //       infowindow.setContent(loc[i].location);
+                //       infowindow.open(map, marker);
+                //     };
+                //   })(marker, i)
+                // );
+            }
+
+            //Resize Function
+            google.maps.event.addDomListener(window, "resize", function () {
+                var center = map.getCenter();
+                google.maps.event.trigger(map, "resize");
+                map.setCenter(center);
+            });
+        }
+
+      // http://stackoverflow.com/questions/16266772/google-maps-multiple-custom-markers
+      //modified array with icon-URLs
+    </script>
+</head>
+
+<body>
+    <div class="SummaryReportBox">
+        <div class="SummaryReportLogo">
+            <a href="#"><img src= "<%=apiUrl%>/image-nearshore/Logo.svg" alt="SummaryReportLogo" /></a>
+        </div>
+        <div class="SummaryReportTitle">Nearshoring Evaluation Summary</div>
+        <div class="SummaryReportMapRow">
+            <div class="MapLeftCol">
+                <div id="mapcanvas"></div>
+            </div>
+            <div class="MapRightCol">
+                <div class="MapPinList">
+                    <div class="PinIcon">
+                        <img src="<%=apiUrl%>/image-nearshore/pinyellow.svg" alt="pinyellow" />
+                    </div>
+                    <span class="PortMfgText">
+                        <%=currentPort%>(Current Port)
+                    </span>
+                </div>
+                <div class="MapPinList">
+                    <div class="PinIcon">
+                        <img src="<%=apiUrl%>/image-nearshore/pingreen.svg" alt="pingreen" />
+                    </div>
+                    <span class="PortMfgText">
+                        <%=futurePort%>(Future Port)
+                    </span>
+                </div>
+                <div class="MapPinList">
+                    <div class="PinIcon">
+                        <img src="<%=apiUrl%>/image-nearshore/pinblue.svg" alt="pinblue" />
+                    </div>
+                    <span class="PortMfgText">
+                        <%=distributionNode%>(Node)
+                    </span>
+                </div>
+                <div class="MapPinList">
+                    <div class="PinIcon">
+                        <img src="<%=apiUrl%>/image-nearshore/pinorange.svg" alt="pinorange" />
+                    </div>
+                    <span class="PortMfgText">
+                        <%=currentManufacturing%>(Current Mfg.)
+                    </span>
+                </div>
+                <div class="MapPinList">
+                    <div class="PinIcon">
+                        <img src="<%=apiUrl%>/image-nearshore/pinsalmon.svg" alt="pinsalmon" />
+                    </div>
+                    <span class="PortMfgText">
+                        <%=futureManufacturing%>(Future Mfg.)
+                    </span>
+                </div>
+            </div>
+        </div>
+        <div class="SummaryReportCalCard">
+            <div class="CalCardTitle">Summary Report Calculations</div>
+            <div class="ReportCalCardListBlock">
+                <div class="ReportCalCardList">
+                    <div class="ReportCalCardListLeft">
+                        <div class="ReportCalCardLabel">
+                            Value of Manufacturing Relocation
+                        </div>
+                        <div class="ReportCalCardDes">
+                            $<%=valueOfManufacturingRelocation%> = <%=LTNet%>(LNet) + <%=ContainerSavings%>
+                                        (ContainerSavings) + <%=DSavings%>(DSavings)
+                        </div>
+                    </div>
+                    <div class="ReportCalCardPrice">$<%=valueOfManufacturingRelocation%>
+                    </div>
+                </div>
+                <div class="ReportCalCardList">
+                    <div class="ReportCalCardListLeft">
+                        <div class="ReportCalCardLabel">Cost of Plant Ownership</div>
+                        <div class="ReportCalCardDes">$<%=costOfPlantOwnership%> = <%=SpaceCost%>(SpaceCost) -
+                                    <%=LaborCost%>(LaborCost)</div>
+                    </div>
+                    <div class="ReportCalCardPrice">$<%=costOfPlantOwnership%>
+                    </div>
+                </div>
+                <div class="ReportCalCardList">
+                    <div class="ReportCalCardListLeft">
+                        <div class="ReportCalCardLabel">
+                            Value of Final Distribution Relocation
+                        </div>
+                        <div class="ReportCalCardDes">$<%=finalDistributionRelocation%> = <%=FMCost%> (FMCost) +
+                                    <%=InTransitInv%>(InTransitInv)
+                        </div>
+                    </div>
+                    <div class="ReportCalCardPrice">$<%=finalDistributionRelocation%>
+                    </div>
+                </div>
+                <div class="ReportCalCardList">
+                    <div class="ReportCalCardListLeft ListTotal">
+                        <div class="ReportCalCardLabel">Total Opportunity Value</div>
+                        <div class="ReportCalCardDes">$<%=totalOpportunityValue%> = $<%=valueOfManufacturingRelocation%>
+                                    - $<%=costOfPlantOwnership%> + $<%=finalDistributionRelocation%>
+                        </div>
+                    </div>
+                    <div class="ReportCalCardPrice">$<%=totalOpportunityValue%>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</body>
+
+</html>
